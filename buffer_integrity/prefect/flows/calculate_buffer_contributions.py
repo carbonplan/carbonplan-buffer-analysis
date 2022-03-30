@@ -3,14 +3,13 @@ from pathlib import Path
 
 import fsspec
 import pandas as pd
-from carbonplan_forest_offsets.load.issuance import load_issuance_table
-
 import prefect
+from carbonplan_forest_offsets.load.issuance import load_issuance_table
 
 OUT_FN = Path(__file__).parents[2] / "data" / "buffer_contributions.json"
 
 
-@prefect.task
+@prefect.taskgit
 def load_project_fire_risks() -> dict:
     """Load per-project buffer contributions
 
