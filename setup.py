@@ -15,12 +15,12 @@ PYTHON_REQUIRES = ">=3.7"
 description = "carbonplan python project template"
 
 setup(
-    name="carbonplan-project",
+    name="carbonplan_buffer_integrity",
     description=description,
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
-    maintainer="Raphael Hagen",
-    maintainer_email="raphael@carbonplan.org",
+    maintainer="Grayson Badgley",
+    maintainer_email="grayson@carbonplan.org",
     url="https://github.com/carbonplan/python-project-template",
     packages=find_packages(),
     include_package_data=True,
