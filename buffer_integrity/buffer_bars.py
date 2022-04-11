@@ -35,16 +35,16 @@ def fire_buffer_bars(buffer_data, fire):
     )
     ax.barh(
         mid_bar,
-        fire["lower_loss"],
+        fire["minimum"],
         height=height,
-        left=buffer_data["gross_buffer"] - fire["lower_loss"],
+        left=buffer_data["gross_buffer"] - fire["minimum"],
         color=light["red"],
     )
     ax.barh(
         top_bar,
-        fire["upper_loss"],
+        fire["maximum"],
         height=height,
-        left=buffer_data["gross_buffer"] - fire["upper_loss"],
+        left=buffer_data["gross_buffer"] - fire["maximum"],
         color=light["red"],
     )
 
@@ -57,16 +57,16 @@ def fire_buffer_bars(buffer_data, fire):
     )
     ax.barh(
         mid_bar,
-        fire["lower_loss"],
+        fire["minimum"],
         height=height,
-        left=buffer_data["gross_buffer"] - fire["lower_loss"],
+        left=buffer_data["gross_buffer"] - fire["minimum"],
         color=light["red"],
     )
     ax.barh(
         top_bar,
-        fire["upper_loss"],
+        fire["maximum"],
         height=height,
-        left=buffer_data["gross_buffer"] - fire["upper_loss"],
+        left=buffer_data["gross_buffer"] - fire["maximum"],
         color=light["red"],
     )
 
@@ -86,14 +86,14 @@ def fire_buffer_bars(buffer_data, fire):
 
     ax.annotate(text="Upper:", xy=(0.975, 0.23), xycoords="axes fraction")
     ax.annotate(
-        text=f"{fire['upper_loss'] / 1_000_000:.1f} M",
+        text=f"{fire['maximum'] / 1_000_000:.1f} M",
         xy=(1.1775, 0.23),
         xycoords="axes fraction",
     )
 
     ax.annotate(text="Lower:", xy=(0.975, 0.465), xycoords="axes fraction")
     ax.annotate(
-        text=f"{fire['lower_loss'] / 1_000_000:.1f} M",
+        text=f"{fire['minimum'] / 1_000_000:.1f} M",
         xy=(1.1775, 0.465),
         xycoords="axes fraction",
     )
@@ -144,17 +144,17 @@ def insect_buffer_bars(buffer_data, insect):
 
     ax.barh(
         top_bar,
-        insect["upper_loss"],
+        insect["maximum"],
         height=height,
-        left=fire_actual - insect["upper_loss"],
+        left=fire_actual - insect["maximum"],
         color=light["purple"],
     )
 
     ax.barh(
         mid_bar,
-        insect["lower_loss"],
+        insect["minimum"],
         height=height,
-        left=fire_actual - insect["lower_loss"],
+        left=fire_actual - insect["minimum"],
         color=light["purple"],
     )
 
@@ -174,14 +174,14 @@ def insect_buffer_bars(buffer_data, insect):
 
     ax.annotate(text="Upper:", xy=(0.975, 0.23), xycoords="axes fraction")
     ax.annotate(
-        text=f"{insect['upper_loss'] / 1_000_000:.1f} M",
+        text=f"{insect['maximum'] / 1_000_000:.1f} M",
         xy=(1.1775, 0.23),
         xycoords="axes fraction",
     )
 
     ax.annotate(text="Lower:", xy=(0.975, 0.465), xycoords="axes fraction")
     ax.annotate(
-        text=f"{insect['lower_loss'] / 1_000_000:.1f} M",
+        text=f"{insect['minimum'] / 1_000_000:.1f} M",
         xy=(1.1775, 0.465),
         xycoords="axes fraction",
     )
@@ -199,11 +199,19 @@ def main():
     with open(Path(__file__).parents[1] / "data" / "buffer_contributions.json") as f:
         buffer_data = json.load(f)
 
-    mock_fire_data = {"upper_loss": 6_800_000, "lower_loss": 5_800_000}
-    mock_bug_data = {"upper_loss": 8_750_000, "lower_loss": 4_750_000}
+    with open(Path(__file__).parents[1] / "data" / "fire-summary.json") as f:
+        estimated_fire_loses = json.load(f)
 
-    fire_buffer_bars(buffer_data, mock_fire_data)
-    insect_buffer_bars(buffer_data, mock_bug_data)
+    with open(Path(__file__).parents[1] / "data" / "tanoak-summary.json") as f:
+        estimated_tanoak_loses = json.load(f)
+
+    tanoak_loses = {
+        "maximum": estimated_tanoak_loses["total"]["minimum"],
+        "minimum": estimated_tanoak_loses["tmean"]["minimum"],
+    }
+
+    fire_buffer_bars(buffer_data, estimated_fire_loses)
+    insect_buffer_bars(buffer_data, tanoak_loses)
 
 
 if __name__ == "__main__":

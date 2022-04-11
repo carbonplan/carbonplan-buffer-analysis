@@ -6,17 +6,22 @@ import pandas as pd
 import prefect
 from carbonplan_forest_offsets.load.issuance import load_issuance_table
 
-OUT_FN = Path(__file__).parents[2] / "data" / "buffer_contributions.json"
+serializer = prefect.engine.serializers.JSONSerializer()
+result = prefect.engine.results.LocalResult(
+    dir=Path(__file__).parents[3] / "data",
+    location="buffer_contributions.json",
+    serializer=serializer,
+)
 
 
-@prefect.taskgit
+@prefect.task
 def load_project_fire_risks() -> dict:
     """Load per-project buffer contributions
 
     Returns:
         dict -- key-value mapping of project OPR ID to buffer contribution
     """
-    with fsspec.open('gs://carbonplan-buffer-analysis/project-fire-risks.json') as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/project-fire-risks.json") as f:
         d = json.load(f)
     return d
 
@@ -64,7 +69,7 @@ def calculate_fire_buffer(project_issuance: dict, fire_risks: dict) -> float:
 
 @prefect.task
 def calculate_gross_buffer(issuance_df: pd.DataFrame) -> float:
-    return round(issuance_df['buffer_pool'].sum())
+    return round(issuance_df["buffer_pool"].sum())
 
 
 @prefect.task
@@ -72,23 +77,21 @@ def calculate_pest_buffer(project_issuance: dict) -> float:
     return round(sum(project_issuance.values()) * 0.03)  # same for all projects and all protocols!
 
 
-@prefect.task
-def write_result(gross_buffer: float, pest_contributions: float, fire_contributions: float) -> None:
+@prefect.task(result=result)
+def summarize_buffer_contributions(
+    gross_buffer: float, pest_contributions: float, fire_contributions: float
+) -> None:
     """Write json with fire buffer pool number
 
     Arguments:
         fire_contributions {float} -- Number of buffer pool ARBOCs earmarked for fire
     """
-    print(OUT_FN)
-    with fsspec.open(OUT_FN, "w") as f:
-        json.dump(
-            {
-                "fire_contributions": fire_contributions,
-                "pest_contributions": pest_contributions,
-                "gross_buffer": gross_buffer,
-            },
-            f,
-        )
+
+    return {
+        "pest_contributions": pest_contributions,
+        "fire_contributions": fire_contributions,
+        "gross_buffer": gross_buffer,
+    }
 
 
 with prefect.Flow("calculate-fire-buffer") as flow:
@@ -101,4 +104,4 @@ with prefect.Flow("calculate-fire-buffer") as flow:
     pest_contributions = calculate_pest_buffer(project_issuance)
     fire_contributions = calculate_fire_buffer(project_issuance, fire_risks)
 
-    write_result(gross_buffer, pest_contributions, fire_contributions)
+    summarize_buffer_contributions(gross_buffer, pest_contributions, fire_contributions)

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import prefect
 from carbonplan_forest_offsets.data import cat
@@ -24,11 +25,6 @@ def get_fraction_tanoak(project):
         else:
             return 0
     return round(sum([assess_area[0] * assess_area[1] for assess_area in store]), 3)
-
-
-@prefect.task
-def load_projects():
-    pass
 
 
 def load_recent_projects():
@@ -109,10 +105,10 @@ def summarize_projects():
 
 @prefect.task
 def save_tanoak_projects(tanoak_projects):
-    with open("/tmp/test_tanoak.json", "w") as f:
-        json.dump(tanoak_projects, f)
+    with open(Path(__file__).parents[3] / "data" / "tanoak_basal_area.json", "w") as f:
+        json.dump(tanoak_projects, f, indent=2)
 
 
 with prefect.Flow("tanoak-summaries") as flow:
-    tanoak_projects = summarize_projects
+    tanoak_projects = summarize_projects()
     save_tanoak_projects(tanoak_projects)

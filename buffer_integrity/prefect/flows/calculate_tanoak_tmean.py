@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import fsspec
 import prefect
@@ -46,8 +47,8 @@ def summarize_tanoak_tmean(tanoak_tmean):
 
 @prefect.task
 def save_tanoak_tmean(data):
-    with open("/home/jovyan/data/buffer-deplete/tanoak-tmean-quantiles.json", "w") as f:
-        json.dump(data, f)
+    with open(Path(__file__).parents[3] / "data" / "tanoak-tmean-quantiles.json", "w") as f:
+        json.dump(data, f, indent=2)
 
 
 with prefect.Flow("tanoak-climate-tmean") as flow:
