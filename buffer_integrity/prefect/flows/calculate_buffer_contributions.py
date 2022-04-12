@@ -77,9 +77,17 @@ def calculate_pest_buffer(project_issuance: dict) -> float:
     return round(sum(project_issuance.values()) * 0.03)  # same for all projects and all protocols!
 
 
+@prefect.task
+def calculate_other_disturb_buffer(project_issuance: dict) -> float:
+    return round(sum(project_issuance.values()) * 0.03)  # same for all projects and all protocols!
+
+
 @prefect.task(result=result)
 def summarize_buffer_contributions(
-    gross_buffer: float, pest_contributions: float, fire_contributions: float
+    gross_buffer: float,
+    pest_contributions: float,
+    other_contributions: float,
+    fire_contributions: float,
 ) -> None:
     """Write json with fire buffer pool number
 
@@ -91,6 +99,7 @@ def summarize_buffer_contributions(
         "pest_contributions": pest_contributions,
         "fire_contributions": fire_contributions,
         "gross_buffer": gross_buffer,
+        "other_contributions": other_contributions,
     }
 
 
@@ -103,5 +112,7 @@ with prefect.Flow("calculate-fire-buffer") as flow:
     gross_buffer = calculate_gross_buffer(issuance_df)
     pest_contributions = calculate_pest_buffer(project_issuance)
     fire_contributions = calculate_fire_buffer(project_issuance, fire_risks)
-
-    summarize_buffer_contributions(gross_buffer, pest_contributions, fire_contributions)
+    other_contributions = calculate_other_disturb_buffer(project_issuance)
+    summarize_buffer_contributions(
+        gross_buffer, pest_contributions, other_contributions, fire_contributions
+    )
