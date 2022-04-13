@@ -1,7 +1,7 @@
 import json
 from itertools import product
-from pathlib import Path
 
+import fsspec
 import prefect
 
 from buffer_integrity.prefect.tasks import project_reversals
@@ -9,7 +9,7 @@ from buffer_integrity.prefect.tasks import project_reversals
 
 @prefect.task
 def load_ravg_summary(fire_name):
-    with open(Path(__file__).parents[3] / "data" / f"{fire_name}.json") as f:
+    with fsspec.open(f"gs://carbonplan-buffer-analysis/intermediates/ravg/{fire_name}.json") as f:
         ravg_summary = json.load(f)
     return ravg_summary
 
