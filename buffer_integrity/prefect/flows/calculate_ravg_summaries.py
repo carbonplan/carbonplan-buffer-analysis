@@ -1,6 +1,6 @@
 import json
-from pathlib import Path
 
+import fsspec
 import prefect
 
 from buffer_integrity.prefect.tasks import ravg
@@ -8,8 +8,9 @@ from buffer_integrity.prefect.tasks import ravg
 
 @prefect.task
 def save_ravg_summary(fire_name, ravg_summary):
-    # print(Path(__file__))
-    with open(Path(__file__).parents[3] / "data" / f"{fire_name}.json", "w") as f:
+    with fsspec.open(
+        f"gs://carbonplan-buffer-analysis/intermediates/ravg/{fire_name}.json", "w"
+    ) as f:
         json.dump(ravg_summary, f)
 
 
