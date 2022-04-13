@@ -1,17 +1,9 @@
 import json
-from pathlib import Path
 
 import fsspec
 import pandas as pd
 import prefect
 from carbonplan_forest_offsets.load.issuance import load_issuance_table
-
-serializer = prefect.engine.serializers.JSONSerializer()
-result = prefect.engine.results.LocalResult(
-    dir=Path(__file__).parents[3] / "data",
-    location="buffer_contributions.json",
-    serializer=serializer,
-)
 
 
 @prefect.task
@@ -21,7 +13,7 @@ def load_project_fire_risks() -> dict:
     Returns:
         dict -- key-value mapping of project OPR ID to buffer contribution
     """
-    with fsspec.open("gs://carbonplan-buffer-analysis/project-fire-risks.json") as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/inputs/project-fire-risks.json") as f:
         d = json.load(f)
     return d
 
@@ -82,7 +74,7 @@ def calculate_other_disturb_buffer(project_issuance: dict) -> float:
     return round(sum(project_issuance.values()) * 0.03)  # same for all projects and all protocols!
 
 
-@prefect.task(result=result)
+@prefect.task()
 def summarize_buffer_contributions(
     gross_buffer: float,
     pest_contributions: float,
@@ -95,12 +87,14 @@ def summarize_buffer_contributions(
         fire_contributions {float} -- Number of buffer pool ARBOCs earmarked for fire
     """
 
-    return {
+    d = {
         "pest_contributions": pest_contributions,
         "fire_contributions": fire_contributions,
         "gross_buffer": gross_buffer,
         "other_contributions": other_contributions,
     }
+    with fsspec.open("gs://carbonplan-buffer-analysis/outputs/buffer_contributions.json", "w") as f:
+        json.dump(d, f)
 
 
 with prefect.Flow("calculate-fire-buffer") as flow:

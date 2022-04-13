@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import fsspec
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +13,7 @@ mpl.rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})
 
 
 def main():
-    with open(Path(__file__).parents[2] / "data" / "buffer_contributions.json") as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/outputs/buffer_contributions.json") as f:
         d = json.load(f)
     natural_risk_buffer = sum([v for k, v in d.items() if not k.startswith("gross")])
 
@@ -80,7 +81,7 @@ def main():
         xycoords="axes fraction",
     )
 
-    ax.annotate(text="Disease & Insect", xy=(0.41, 0.47), xycoords="axes fraction")
+    ax.annotate(text="Disease & Insect", xy=(0.40, 0.47), xycoords="axes fraction")
     ax.annotate(
         text=f"{d['pest_contributions'] / 1_000_000:.1f}$\,$M ({d['pest_contributions']/ d['gross_buffer'] * 100:.0f}%)",  # noqa
         xy=(0.75, 0.47),
@@ -88,7 +89,7 @@ def main():
         xycoords="axes fraction",
     )
 
-    ax.annotate(text="Other", xy=(0.57, 0.29), xycoords="axes fraction")
+    ax.annotate(text="Other", xy=(0.58, 0.29), xycoords="axes fraction")
     ax.annotate(
         text=f"{d['other_contributions'] / 1_000_000:.1f}$\,$M ({d['other_contributions']/ d['gross_buffer'] * 100:.0f}%)",  # noqa
         xy=(0.70, 0.29),
@@ -96,7 +97,7 @@ def main():
         xycoords="axes fraction",
     )
 
-    ax.annotate(text="Financial & Management", xy=(0.565, -0.05), xycoords="axes fraction")
+    ax.annotate(text="Financial & Management", xy=(0.56, -0.05), xycoords="axes fraction")
     ax.annotate(
         text=f"{ non_natural / 1_000_000:.1f}$\,$M ({non_natural/ d['gross_buffer'] * 100:.0f}%)",  # noqa
         xy=(1.065, -0.05),
