@@ -86,10 +86,10 @@ if __name__ == "__main__":
     )
 
     max_loss = estimated_fire_loses["maximum"]
-    ax.annotate(text="Upper Bound", xy=(0.22, 0.29), xycoords="axes fraction")
+    ax.annotate(text="Upper Bound", xy=(0.24, 0.29), xycoords="axes fraction")
     ax.annotate(
         text=f"{max_loss / 1_000_000 :.1f}$\,$M ({max_loss/ buffer_data['fire_contributions'] * 100:.0f}%)",  # noqa
-        xy=(0.50, 0.29),
+        xy=(0.52, 0.29),
         color=light["secondary"],
         xycoords="axes fraction",
     )

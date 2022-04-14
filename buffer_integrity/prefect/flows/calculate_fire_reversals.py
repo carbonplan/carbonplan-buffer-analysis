@@ -17,6 +17,8 @@ def load_ravg_summary(fire_name):
 with prefect.Flow("project-fire-reversals") as flow:
     severity_level = prefect.Parameter("severity_level")
     salvage_level = prefect.Parameter("salvage_level")
+    include_ifm3 = prefect.Parameter("include_ifm3")
+
     opr_id = prefect.Parameter("opr_id")
     fire_name = prefect.Parameter("fire_name")
     is_proxy = prefect.Parameter("is_proxy")
@@ -37,29 +39,33 @@ with prefect.Flow("project-fire-reversals") as flow:
     storage_factors = project_reversals.load_woodproduct_storage_factors(opr_id)
 
     biomass_loss = project_reversals.calculate_biomass_loss(
-        opr_id, ravg_summary, burned_area, prefire_biomass, severity_level
+        opr_id, ravg_summary, burned_area, prefire_biomass, severity_level, include_ifm3
     )
     salvaged_wp = project_reversals.calculate_salvaged_wood_products(
         biomass_loss, storage_factors, salvage_level
     )
 
     project_reversals.write_estimate(
-        opr_id, biomass_loss, salvaged_wp, severity_level, salvage_level
+        opr_id, biomass_loss, salvaged_wp, severity_level, salvage_level, include_ifm3
     )
 
 if __name__ == "__main__":
     severity_levels = ["low", "high"]
     salvage_levels = ["low", "high"]
+    ifm3_flags = [True, False]
     events = [
         {"opr_id": "ACR260", "fire_name": "lionshead", "is_proxy": False, "year": 2020},
         {"opr_id": "ACR273", "fire_name": "bootleg", "is_proxy": False, "year": 2021},
         {"opr_id": "ACR255", "fire_name": "north-star", "is_proxy": True, "year": 2021},
         {"opr_id": "CAR1102", "fire_name": "ranch", "is_proxy": True, "year": 2020},
     ]
-    for severity_level, salvage_level, event in product(severity_levels, salvage_levels, events):
+    for severity_level, salvage_level, ifm3_flag, event in product(
+        severity_levels, salvage_levels, ifm3_flags, events
+    ):
 
         flow.run(
             severity_level=severity_level,
             salvage_level=salvage_level,
+            include_ifm3=ifm3_flag,
             **event,
         )

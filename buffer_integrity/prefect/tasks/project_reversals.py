@@ -155,6 +155,7 @@ def calculate_biomass_loss(
     burned_area: float,
     prefire_biomass: dict,
     severity_level: str,
+    include_ifm3: bool = False,
 ) -> float:
     """Calculates tons of CO2 lost from specific fire event
 
@@ -164,12 +165,18 @@ def calculate_biomass_loss(
         burned_area {Union[float, None]} -- Number of acres burned. If None, take from ravg_data
         prefire_biomass {dict} -- Tons of CO2 at risk
         severity_level {str} -- ravg_data estimates has low and high estiamtes of mortality
-
+        include_ifm3 {bool} -- include CWD (ifm3) in loss estimates
     Returns:
         float -- number of tons burned
     """
 
-    onsite_carbon = prefire_biomass["ifm-1"]  # too conservative? loses include ifm-3
+    if include_ifm3:
+        onsite_carbon = (
+            prefire_biomass["ifm-1"] + prefire_biomass["ifm-3"]
+        )  # too conservative? loses include ifm-3
+    else:
+        onsite_carbon = prefire_biomass["ifm-1"]
+
     project_area = load_project_data(opr_id)["acreage"]
 
     frac_burned = burned_area / project_area
@@ -183,6 +190,8 @@ def calculate_salvaged_wood_products(
     biomass_loss: float, storage_factors: dict, salvage_level: str
 ) -> float:
     """Calculate tCO2 locked up in wood proucts
+
+    If ifm-3 included in loss, allow salvage.
 
     Arguments:
         biomass_loss {float} -- total biomass lost in fire
@@ -211,8 +220,9 @@ def write_estimate(
     salvaged_wp: float,
     severity_level: str,
     salvage_level: str,
+    ifm_3: bool,
 ) -> None:
-    fn = f"gs://carbonplan-buffer-analysis/outputs/reversals/{opr_id}_severity-{severity_level}_salvage-{salvage_level}.json"  # noqa
+    fn = f"gs://carbonplan-buffer-analysis/outputs/reversals/{opr_id}_severity-{severity_level}_salvage-{salvage_level}_ifm3-{str(ifm_3).lower()}.json"  # noqa
 
     record = {
         "opr_id": opr_id,
@@ -220,6 +230,7 @@ def write_estimate(
         "salvage_wp": salvaged_wp,
         "severity": severity_level,
         "salvage": salvage_level,
+        "includes_ifm_3": str(ifm_3).lower(),
     }
     with fsspec.open(fn, "w") as f:
         json.dump(record, f, indent=2)

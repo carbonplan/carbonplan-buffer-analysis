@@ -42,7 +42,9 @@ def summarize_committed_loses(reversals, max_loses):
         reversals["max_loss"] < reversals["estimated_loss"], "estimated_loss"
     ] = reversals["max_loss"]
 
-    committed_summary = reversals.groupby(["severity", "salvage"]).estimated_loss.sum()
+    committed_summary = reversals.groupby(
+        ["severity", "salvage", "includes_ifm_3"]
+    ).estimated_loss.sum()
 
     return committed_summary
 
