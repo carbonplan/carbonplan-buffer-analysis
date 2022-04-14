@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import fsspec
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,10 +12,10 @@ set_theme(font_scale=1.25)
 mpl.rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})
 
 if __name__ == "__main__":
-    with open(Path(__file__).parents[1] / "data" / "buffer_contributions.json") as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/outputs/buffer_contributions.json") as f:
         buffer_data = json.load(f)
 
-    with open(Path(__file__).parents[1] / "data" / "fire-summary.json") as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/outputs/fire-summary.json") as f:
         estimated_fire_loses = json.load(f)
 
     height = 0.45
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     ax.vlines(x=buffer_data["fire_contributions"], ymin=0, ymax=2.75, color="k")
 
     plt.savefig(
-        Path(__file__).parents[1] / "img" / "fire-bars.pdf",
+        Path(__file__).parents[2] / "img" / "fire-bars.pdf",
         dpi=300,
         bbox_inches="tight",
     )

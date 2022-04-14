@@ -54,7 +54,7 @@ def summarize_reversals(committed_summary):
         "minimum": committed_summary.min() + known_reversals,
         "maximum": committed_summary.max() + known_reversals,
     }
-    with open("gs://carbonplan-buffer-analysis/outputs/fire-summary.json", "w") as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/outputs/fire-summary.json", "w") as f:
         json.dump(d, f)
 
 
