@@ -1,6 +1,6 @@
 import json
-from pathlib import Path
 
+import fsspec
 import prefect
 from carbonplan_forest_offsets.data import cat
 
@@ -105,7 +105,9 @@ def summarize_projects():
 
 @prefect.task
 def save_tanoak_projects(tanoak_projects):
-    with open(Path(__file__).parents[3] / "data" / "tanoak_basal_area.json", "w") as f:
+    with fsspec.open(
+        "gs://carbonplan-buffer-analysis/intermediates/tanoak_basal_area.json", "w"
+    ) as f:
         json.dump(tanoak_projects, f, indent=2)
 
 
