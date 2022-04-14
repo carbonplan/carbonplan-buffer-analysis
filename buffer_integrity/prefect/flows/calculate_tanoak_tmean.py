@@ -1,8 +1,8 @@
 import json
-from pathlib import Path
 
 import fsspec
 import prefect
+import rioxarray  # noqa
 import xarray
 
 
@@ -21,10 +21,9 @@ def load_tmean():
 
 
 @prefect.task
-def load_tanoak_basal_area():
+def load_tanoak_lemma():
     """Load 30m resolution tanoak data, sourced from Lemma"""
-
-    tanoak = xarray.open_rasterio("/home/jovyan/data/rasters/lide3_ba_2017.tif")
+    tanoak = xarray.open_rasterio("gs://carbonplan-buffer-analysis/inputs/lide3_ba_2017.tif")
     tanoak = tanoak.rio.reproject("epsg:4326")
     return tanoak
 
@@ -47,13 +46,15 @@ def summarize_tanoak_tmean(tanoak_tmean):
 
 @prefect.task
 def save_tanoak_tmean(data):
-    with open(Path(__file__).parents[3] / "data" / "tanoak-tmean-quantiles.json", "w") as f:
+    with fsspec.open(
+        "gs://carbonplan-buffer-analysis/intermediates/tanoak-tmean-quantiles.json", "w"
+    ) as f:
         json.dump(data, f, indent=2)
 
 
 with prefect.Flow("tanoak-climate-tmean") as flow:
     tmean = load_tmean()
-    tanoak = load_tanoak_basal_area()
+    tanoak = load_tanoak_lemma()
 
     tanoak_tmean = reproject_tmean(tmean, tanoak)
     summary = summarize_tanoak_tmean(tanoak_tmean)
