@@ -10,7 +10,7 @@ from carbonplan_styles.mpl import set_theme
 
 set_theme(font_scale=1.25)
 mpl.rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})
-
+plt.rcParams.update({"font.size": 14, "svg.fonttype": "none"})
 if __name__ == "__main__":
     with fsspec.open("gs://carbonplan-buffer-analysis/outputs/buffer_contributions.json") as f:
         buffer_data = json.load(f)
@@ -111,6 +111,12 @@ if __name__ == "__main__":
 
     plt.savefig(
         Path(__file__).parents[2] / "img" / "fire-bars.pdf",
+        dpi=300,
+        bbox_inches="tight",
+    )
+
+    plt.savefig(
+        Path(__file__).parents[2] / "img" / "fire-bars.svg",
         dpi=300,
         bbox_inches="tight",
     )
