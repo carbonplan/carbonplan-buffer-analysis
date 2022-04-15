@@ -10,6 +10,7 @@ from carbonplan_styles.mpl import set_theme
 
 set_theme(font_scale=1.25)
 mpl.rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})
+plt.rcParams.update({"font.size": 14, "svg.fonttype": "none"})
 
 
 def main():
@@ -126,6 +127,11 @@ def main():
     # ax.vlines(x=-10, ymin=0, ymax=1)
     plt.savefig(
         Path(__file__).parents[2] / "img" / "buffer_pool_composition.pdf",
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.savefig(
+        Path(__file__).parents[2] / "img" / "buffer_pool_composition.svg",
         dpi=300,
         bbox_inches="tight",
     )
