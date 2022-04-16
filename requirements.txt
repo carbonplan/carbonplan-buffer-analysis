@@ -1,6 +1,6 @@
 carbonplan==0.4.0
 carbonplan-data==0.4.0
-carbonplan-forest-offsets==1.1.0.post26+dirty
+carbonplan-forest-offsets
 carbonplan-styles==0.4.2
 fsspec==2021.10.1
 geopandas==0.10.2
