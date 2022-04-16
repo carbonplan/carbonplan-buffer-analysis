@@ -2,9 +2,8 @@ import json
 
 import fsspec
 import tqdm
-from shapely.ops import nearest_points
-
 from buffer_integrity import utils
+from shapely.ops import nearest_points
 
 
 def get_nearest_point(geometry, points):

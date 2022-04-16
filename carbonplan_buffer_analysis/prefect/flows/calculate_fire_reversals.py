@@ -3,7 +3,6 @@ from itertools import product
 
 import fsspec
 import prefect
-
 from buffer_integrity.prefect.tasks import project_reversals
 
 

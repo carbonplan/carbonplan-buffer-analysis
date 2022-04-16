@@ -4,7 +4,6 @@ import fsspec
 import pandas as pd
 import prefect
 import xarray
-
 from buffer_integrity import utils
 from buffer_integrity.prefect.flows.calculate_buffer_contributions import get_issuance_table
 from buffer_integrity.prefect.flows.calculate_tanoak_tmean import load_tmean

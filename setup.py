@@ -12,23 +12,23 @@ with open("README.md") as f:
 
 PYTHON_REQUIRES = ">=3.7"
 
-description = "carbonplan python project template"
+description = "analysis of the California forest carbon offsets protocol buffer pool"
 
 setup(
-    name="carbonplan_buffer_integrity",
+    name="carbonplan_buffer_analysis",
     description=description,
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     maintainer="Grayson Badgley",
     maintainer_email="grayson@carbonplan.org",
-    url="https://github.com/carbonplan/python-project-template",
+    url="https://github.com/carbonplan/carbonplan-buffer-integrity",
     packages=find_packages(),
     include_package_data=True,
     python_requires=PYTHON_REQUIRES,
     install_requires=INSTALL_REQUIRES,
     tests_require=["pytest"],
     license="MIT",
-    keywords="carbon, data, climate",
+    keywords="carbon, data, forest offsets",
     use_scm_version={"version_scheme": "post-release", "local_scheme": "dirty-tag"},
     setup_requires=["setuptools_scm", "setuptools>=30.3.0"],
 )

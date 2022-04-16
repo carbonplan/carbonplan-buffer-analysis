@@ -2,7 +2,6 @@ import json
 
 import fsspec
 import prefect
-
 from buffer_integrity.prefect.tasks import ravg
 
 
