@@ -4,9 +4,12 @@ import fsspec
 import pandas as pd
 import prefect
 import xarray
-from buffer_integrity import utils
-from buffer_integrity.prefect.flows.calculate_buffer_contributions import get_issuance_table
-from buffer_integrity.prefect.flows.calculate_tanoak_tmean import load_tmean
+
+from carbonplan_buffer_analysis import utils
+from carbonplan_buffer_analysis.prefect.flows.calculate_buffer_contributions import (
+    get_issuance_table,
+)
+from carbonplan_buffer_analysis.prefect.flows.calculate_tanoak_tmean import load_tmean
 
 TANOAK_BIOMASS_LOSS = {"minimum": 0.5, "maximum": 0.8}
 

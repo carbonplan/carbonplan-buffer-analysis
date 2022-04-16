@@ -2,7 +2,8 @@ import json
 
 import fsspec
 import prefect
-from buffer_integrity.prefect.tasks import ravg
+
+from carbonplan_buffer_analysis.prefect.tasks import ravg
 
 
 @prefect.task

@@ -3,7 +3,10 @@ import json
 import fsspec
 import pandas as pd
 import prefect
-from buffer_integrity.prefect.flows.calculate_buffer_contributions import get_issuance_table
+
+from carbonplan_buffer_analysis.prefect.flows.calculate_buffer_contributions import (
+    get_issuance_table,
+)
 
 
 def get_known_reversals() -> float:

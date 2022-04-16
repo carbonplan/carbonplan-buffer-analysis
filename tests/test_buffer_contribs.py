@@ -1,4 +1,4 @@
-from buffer_integrity.prefect.flows import calculate_buffer_contributions
+from carbonplan_buffer_analysis.prefect.flows import calculate_buffer_contributions
 
 
 def test_all_projects():

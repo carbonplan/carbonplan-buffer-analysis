@@ -2,8 +2,9 @@ import json
 
 import fsspec
 import tqdm
-from buffer_integrity import utils
 from shapely.ops import nearest_points
+
+from carbonplan_buffer_analysis import utils
 
 
 def get_nearest_point(geometry, points):
