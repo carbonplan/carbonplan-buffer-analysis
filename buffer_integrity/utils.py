@@ -24,7 +24,7 @@ def load_sod_blitz() -> geopandas.GeoDataFrame:
     def is_positive(x):
         return x == "positive"
 
-    with fsspec.open("gs://carbonplan-buffer-analysis/sod-blitz.csv", "r") as f:
+    with fsspec.open("gs://carbonplan-buffer-analysis/inputs/sod-blitz.csv", "r") as f:
         lines = f.readlines()
 
     obs = [

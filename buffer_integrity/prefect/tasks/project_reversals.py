@@ -24,8 +24,10 @@ def load_nifc_fires():
     https://data-nifc.opendata.arcgis.com/datasets/
     nifc::wfigs-wildland-fire-perimeters-full-history/about
     """
-    nifc_uri = "https://storage.googleapis.com/carbonplan-data/raw/nifc/WFIGS_-_Wildland_Fire_Perimeters_Full_History.geojson"  # noqa
-    fires = geopandas.read_file(nifc_uri)
+    with fsspec.open(
+        'gs://carbonplan-buffer-analysis/inputs/nifc_perimeters_2020_2021.geojson'
+    ) as f:
+        fires = geopandas.read_file(f)
 
     nifc_colnames = {"poly_IncidentName": "name", "poly_Acres_AutoCalc": "acres"}
     fires = fires.rename(columns=nifc_colnames)
@@ -47,8 +49,8 @@ def load_mtbs_fires():
 
     Originally from: https://www.mtbs.gov/direct-download
     """
-    fire_uri = "https://storage.googleapis.com/carbonplan-data/raw/mtbs/mtbs_perimeter_data/mtbs_perims_DD.json"  # noqa
-    fires = geopandas.read_file(fire_uri)
+    with fsspec.open("gs://carbonplan-buffer-analysis/inputs/mtbs_perimeters_2019.json") as f:
+        fires = geopandas.read_file(f)
 
     fires = fires[fires["Incid_Type"] == "Wildfire"]
 

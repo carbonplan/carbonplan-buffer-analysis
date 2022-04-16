@@ -23,9 +23,7 @@ SEVERITY_TO_MORTALITY = {
 
 def load_project_nlcd(shp: geopandas.GeoDataFrame) -> xr.DataArray:
     """load nlcd data and clip by shp"""
-    nlcd = xr.open_rasterio(
-        "https://storage.googleapis.com/carbonplan-data/raw/nlcd/conus/30m/2013.tif"
-    )
+    nlcd = xr.open_rasterio("gs://carbonplan-buffer-analysis/inputs/nlcd_2013.tif")
     nlcd = nlcd.rio.set_nodata(0)
 
     bounds = shp.to_crs(nlcd.crs).bounds.to_dict(orient="records")[0]
