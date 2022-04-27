@@ -5,7 +5,7 @@ import prefect
 from carbonplan_forest_offsets.data import cat
 
 
-def get_fraction_tanoak(project):
+def get_fraction_tanoak(project: dict) -> tuple:
     """Generate project level tanoak summaries"""
     store = []
     if len(project["assessment_areas"]) == 0:
@@ -54,7 +54,10 @@ def summarize_project(project):
 
 
 def load_ea_projects():
-    """Load manually assembled list of early action projects"""
+    """Load manually assembled list of early action projects
+
+    Exclusion includes projects that have transitioned from EA, making estimates conservative
+    """
     return [
         "CAR657",
         "CAR681",
@@ -89,7 +92,7 @@ def load_ea_projects():
 
 
 @prefect.task
-def summarize_projects():
+def summarize_projects() -> dict:
     retro_json = cat.project_db_json.read()
     summaries = [summarize_project(project) for project in retro_json]
 
@@ -99,12 +102,16 @@ def summarize_projects():
 
     tanoak_projects.update(recent_projects)
     ea_projects = load_ea_projects()
-    {k: v for k, v in tanoak_projects.items() if k not in ea_projects}
+    tanoak_projects = {k: v for k, v in tanoak_projects.items() if k not in ea_projects}
     return tanoak_projects
 
 
 @prefect.task
 def save_tanoak_projects(tanoak_projects):
+    """Write output
+
+    Motivated by difficulties with prefect Results
+    """
     with fsspec.open(
         "gs://carbonplan-buffer-analysis/intermediates/tanoak_basal_area.json", "w"
     ) as f:
