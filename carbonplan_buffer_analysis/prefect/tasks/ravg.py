@@ -39,6 +39,7 @@ def load_project_nlcd(shp: geopandas.GeoDataFrame) -> xr.DataArray:
 
 @prefect.task
 def load_ravg(fire_name: str) -> xr.DataArray:
+    """Load per fire ravg data"""
     da = xr.open_rasterio(f"gs://carbonplan-buffer-analysis/inputs/ravg/{fire_name}.tif")
     da = da.rio.set_nodata(0)  # RAVG tifs dont assign nodataval which causes rioxarray to error
     return da
@@ -46,6 +47,7 @@ def load_ravg(fire_name: str) -> xr.DataArray:
 
 @prefect.task
 def get_ravg_subset(ravg: xr.DataArray, opr_id: str) -> xr.DataArray:
+    """Trim ravg data to only intersection with project geometry"""
     if opr_id == "ACR255":
         # in this case, project may have excluded burned lands
         # load listed shape and mask the ravg data by eligible conifers as opposed to shp file

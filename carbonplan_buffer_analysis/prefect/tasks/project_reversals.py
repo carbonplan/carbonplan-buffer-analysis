@@ -110,6 +110,7 @@ def load_woodproduct_storage_factors(opr_id: str) -> dict:
 
 @prefect.task
 def get_project_fires(opr_id: str, fires: geopandas.GeoDataFrame) -> geopandas.GeoDataFrame:
+    """intersection of project geometry and MTBS/NIFC fires"""
     geom = load_project_geometry(opr_id)
     if not np.all(geom.is_valid):
         geom.geometry = geom.buffer(0)
@@ -128,6 +129,7 @@ def get_project_fires(opr_id: str, fires: geopandas.GeoDataFrame) -> geopandas.G
 
 @prefect.task
 def save_project_fires(opr_id: str, project_fires: geopandas.GeoDataFrame) -> None:
+    """Save project fires to /tmp as part of debug/analysis"""
     to_save = project_fires.copy()  # below modifies global object, make a copy.
 
     to_save["ignite_at"] = to_save["ignite_at"].astype(
@@ -142,6 +144,7 @@ def save_project_fires(opr_id: str, project_fires: geopandas.GeoDataFrame) -> No
 def calculate_project_burned_area(
     project_fires: geopandas.GeoDataFrame, ravg_summary: dict, is_proxy: bool, year: int
 ) -> float:
+    # proxy area comes from fire perims, otherwise from RAVG
     if is_proxy:
         reversal_year_fires = project_fires[project_fires["ignite_at"].dt.year == year]
         fire_area = reversal_year_fires.unary_union.area  # remove overlaps
