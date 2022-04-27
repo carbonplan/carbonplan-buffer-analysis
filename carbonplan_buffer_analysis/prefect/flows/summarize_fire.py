@@ -10,6 +10,7 @@ from carbonplan_buffer_analysis.prefect.flows.calculate_buffer_contributions imp
 
 
 def get_known_reversals() -> float:
+    """Known reversals, transcribed from issuance table"""
     known_reversals = {
         "trinity": 847_895,
         "eddie_ranch": 276_867,
@@ -38,6 +39,10 @@ def get_max_loses(issuance: pd.DataFrame) -> dict:
 
 @prefect.task
 def summarize_committed_loses(reversals, max_loses):
+    """Calculate losses, taking into account per project issuance
+
+    Losses cannot exceed credit issuance
+    """
     reversals.loc[:, "estimated_loss"] = reversals["biomass_loss"] - reversals["salvage_wp"]
     reversals["max_loss"] = reversals["opr_id"].map(max_loses)
     reversals.loc[

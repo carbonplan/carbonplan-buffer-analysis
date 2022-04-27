@@ -30,7 +30,10 @@ def load_tanoak_lemma():
 
 @prefect.task
 def reproject_tmean(tmean, tanoak):
-    #
+    """Align tmean and tanoak biomass data
+
+    This doesn't currently use chunking and requires a big machine
+    """
     tanoak_tmean = tmean.rio.reproject_match(tanoak)
     tanoak_tmean = tanoak_tmean.where(
         tanoak > 0
@@ -40,6 +43,7 @@ def reproject_tmean(tmean, tanoak):
 
 @prefect.task
 def summarize_tanoak_tmean(tanoak_tmean):
+    """calculate IQR and median tmean across tanoak range"""
     breaks = [0.25, 0.5, 0.75]
     return {k: v for k, v in zip(breaks, tanoak_tmean["tmean"].quantile(breaks).values)}
 
