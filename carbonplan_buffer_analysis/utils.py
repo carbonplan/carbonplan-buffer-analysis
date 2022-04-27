@@ -6,6 +6,9 @@ import pandas as pd
 
 
 def load_project_geometry(opr_id: str) -> geopandas.GeoDataFrame:
+    """Load project geojson"""
+
+    # using fsspec/from_features because geopandas.read_file silently fails on large geojson
     with fsspec.open(f"gs://carbonplan-forest-offsets/carb-geometries/raw/{opr_id}.json") as f:
         d = json.load(f)
 
@@ -21,6 +24,8 @@ def get_project_centroid(gdf: geopandas.GeoDataFrame) -> tuple:
 
 
 def load_sod_blitz() -> geopandas.GeoDataFrame:
+    """Load processed SODblitz data"""
+
     def is_positive(x):
         return x == "positive"
 
