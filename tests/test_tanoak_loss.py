@@ -1,6 +1,6 @@
 import pytest
 
-from buffer_integrity.prefect.flows.calculate_tanoak_basal_area import get_fraction_tanoak
+from carbonplan_buffer_analysis.prefect.flows.calculate_tanoak_basal_area import get_fraction_tanoak
 
 
 @pytest.mark.parametrize(
