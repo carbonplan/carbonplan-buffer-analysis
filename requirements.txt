@@ -2,7 +2,7 @@ carbonplan==0.4.0
 carbonplan-data==0.4.0
 carbonplan-forest-offsets
 carbonplan-styles==0.4.2
-fsspec==2021.10.1
+fsspec==2023.3.0
 geopandas==0.10.2
 matplotlib==3.4.3
 numpy==1.20.3
