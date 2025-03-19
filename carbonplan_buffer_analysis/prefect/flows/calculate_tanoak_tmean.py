@@ -10,7 +10,7 @@ import xarray
 def load_tmean():
 
     with fsspec.open(
-        "https://carbonplan.blob.core.windows.net/carbonplan-forests/offsets/archive/inputs/prism/conus_tmean.nc"  # noqa
+        "https://carbonplan-forests.s3.us-west-2.amazonaws.com/offsets/archive/inputs/prism/conus_tmean.nc"  # noqa
     ) as f:
         ds = xarray.open_dataset(f)
 
